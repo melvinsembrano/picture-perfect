@@ -258,7 +258,9 @@
 
       $(document).ready(function () {
         $("#auth-loginlink").click(function() {
-          FB.login();
+          FB.login(function() {
+          
+            },{scope: 'user_about_me,user_photos'});
         });
 
         $("#auth-logoutlink").click(function() {
