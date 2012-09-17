@@ -111,12 +111,7 @@
           // window.location.reload() because if this is in a canvas there was a
           // post made to this page and a reload will trigger a message to the
           // user asking if they want to send data again.
-          // window.location = window.location;
-          // FbMe.loadPictures();
-        });
-
-        FB.Event.subscribe('auth.statusChange', function(response) {
-          FbMe.init();
+          window.location = window.location;
         });
 
         FB.Canvas.setAutoGrow();
@@ -163,113 +158,110 @@
             </div>
           </div>
       <% else %>
-        <!--
         <div>
           <h1>Welcome</h1>
             <a href='/auth/facebook' class="fb_button fb_button_medium">
               <span class="fb_button_text">Log In</span>
             </a>
-
         </div>
-        -->
 
       <% end %>
     </header>
 
-    <header>
-        <div id="auth-status">
-          <div id="auth-loggedin">
-            <a class="fb_button fb_button_medium" href="#" id="auth-loginlink">
-              <span class="fb_button_text">Log In</span>
-            </a>
+    <section id="get-started">
+      <p>Welcome to your Facebook app, running on <span>heroku</span>!</p>
+      <a href="https://devcenter.heroku.com/articles/facebook?utm_source=facebook&utm_medium=app&utm_campaign=fb_integration" target="_top" class="button">Learn How to Edit This App</a>
+    </section>
+
+
+    <% if @user %>
+    <section id="samples" class="clearfix">
+          <h1>Examples of the Facebook Graph API</h1>
+
+          <div class="list">
+            <h3>A few of your friends</h3>
+            <ul class="friends">
+              <% @friends.each do |friend| %>
+                <li>
+                  <a href="#" onclick="window.open('http://www.facebook.com/<%= friend['id']%>')">
+                    <img src="https://graph.facebook.com/<%= friend['id'] %>/picture?type=square" alt="<%= friend['name'] %>">
+                    <%= friend['name'] %>
+                  </a>
+                </li>
+              <% end %>
+            </ul>
           </div>
-          <div id="auth-loggedout" style="display:none">
-            Hi, <span id="auth-displayname"></span>  
-          (<a href="#" id="auth-logoutlink">logout</a>)
-        </div>
+
+          <div class="list inline">
+            <h3>Recent photos</h3>
+            <ul class="photos">
+              <% @photos.each_with_index do |photo, index| %>
+                <li style="background-image: url(<%= photo['picture'] %>)" class='<%= 'first-column' if (index%4).zero? %>'>
+                  <a href="#" onclick="window.open('http://www.facebook.com/<%= photo['id'] %>')">
+                    <%= photo['name'] %>
+                  </a>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <div class="list">
+            <h3>Things you like</h3>
+            <ul class="things">
+              <% @likes.each do |like| %>
+                <li>
+                  <a href="#" onclick="window.open('http://www.facebook.com/<%= like['id'] %>')">
+                    <img src="https://graph.facebook.com/<%= like['id'] %>/picture?type=square" alt="<%= like['name'] %>">
+                    <%= like['name'] %>
+                  </a>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <div class="list">
+            <h3>Friends using this app</h3>
+            <ul class="friends">
+              <% @friends_using_app.each do |friend_result| %>
+                <li>
+                  <a href="#" onclick="window.open('http://www.facebook.com/<%= friend_result['uid'] %>')">
+                    <img src="<%= friend_result['pic_square'] %>" alt="<%= friend_result['name'] %>">
+                    <%= friend_result['name'] %>
+                  </a>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </section>
+    <% end %>
 
 
-        <div style="margin-top: 2em;" class="clearfix sample-images">
-          <ul id="image_list">
-            <li>
-              <h1>Picture 1</h1>
-              <img src="http://streams.toyota.com.au/static/images/16vkn-toyota-hilux-global-navigation-515x307.jpg" />
-            </li>
-            <li>
-              <h1>Picture 2</h1>
-              <img src="http://streams.toyota.com.au/static/vehicles/camry/content/experience-V2/hotspots/img-hero-car-1.png" />
-            </li>
-             <li>
-              <h1>Picture 3</h1>
-              <img src="http://streams.toyota.com.au/static/images/16vkn-toyota-prado-global-navigation-515x307.jpg" />
-            </li>
-
-          </ul>
-        </div>
-
-    </header>
-
-    <script type="text/javascript">
-
-      var FbMe = {
-        init: function () {
-          if (FbMe.isLoggedIn()) {
-            $("#auth-loggedout").show();
-            $("#auth-loggedin").hide();
-            FbMe.loadPictures();
-          } else {
-            if (FbMe.reload) {
-              window.location = '/'; //window.location;
-            }
-            $("#auth-loggedout").hide();
-            $("#auth-loggedin").show();
-            console.info('please login');
-          }
-        },
-
-        isLoggedIn: function () {
-          return FB.getUserID() !== 0;
-        },
-
-        loadPictures: function() {
-
-          FB.api('/me/photos?limit=3', function(response){ 
-            var data = response.data;
-            var list = $("#image_list li");
-
-            for(var i = 0; i < data.length; i++) {
-              console.info(data[i]);
-              // $(list[i]).find("img").attr("src", data[i].picture);
-              $(list[i]).find("img").attr("src", data[i].images[3].source);
-            }
-          })
-        },
-
-        afterFbLoaded: function(callback) {
-          if(window.FB) {
-            callback();
-          } else {
-            setTimeout(function() {
-              FbMe.afterFbLoaded(callback);
-            }, 100);
-          }
-        }
-      };
-
-      $(document).ready(function () {
-        $("#auth-loginlink").click(function() {
-          FB.login();
-        });
-
-        $("#auth-logoutlink").click(function() {
-          FbMe.reload = true;
-          FB.logout();
-        });
-
-
-      });
-
-    </script>
-
+    <section id="guides" class="clearfix">
+      <h1>Learn More About Heroku &amp; Facebook Apps</h1>
+      <ul>
+        <li>
+          <a href="https://www.heroku.com/?utm_source=facebook&utm_medium=app&utm_campaign=fb_integration" target="_top" class="icon heroku">Heroku</a>
+          <p>Learn more about <a href="https://www.heroku.com/?utm_source=facebook&utm_medium=app&utm_campaign=fb_integration" target="_top">Heroku</a>, or read developer docs in the Heroku <a href="https://devcenter.heroku.com/" target="_top">Dev Center</a>.</p>
+        </li>
+        <li>
+          <a href="https://developers.facebook.com/docs/guides/web/" target="_top" class="icon websites">Websites</a>
+          <p>
+            Drive growth and engagement on your site with
+            Facebook Login and Social Plugins.
+          </p>
+        </li>
+        <li>
+          <a href="https://developers.facebook.com/docs/guides/mobile/" target="_top" class="icon mobile-apps">Mobile Apps</a>
+          <p>
+            Integrate with our core experience by building apps
+            that operate within Facebook.
+          </p>
+        </li>
+        <li>
+          <a href="https://developers.facebook.com/docs/guides/canvas/" target="_top" class="icon apps-on-facebook">Apps on Facebook</a>
+          <p>Let users find and connect to their friends in mobile apps and games.</p>
+        </li>
+      </ul>
+    </section>
   </body>
 </html>

@@ -4,6 +4,7 @@ require 'koala'
 enable :sessions
 set :raise_errors, false
 set :show_exceptions, false
+set :bind, 'hh-fb-poc.local'
 
 # Scope defines what permissions that we are asking the user to grant.
 # In this example, we are asking for the ability to publish stories
@@ -15,7 +16,10 @@ set :show_exceptions, false
 FACEBOOK_SCOPE = 'user_likes,user_photos,user_photo_video_tags'
 
 unless ENV["FACEBOOK_APP_ID"] && ENV["FACEBOOK_SECRET"]
-  abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
+  # abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
+  ENV["FACEBOOK_APP_ID"] = '461240437254731'
+  ENV["FACEBOOK_SECRET"] = '59135c58ac75ef52d97ecd9b9e822976'
+  ENV['TEST_DOMAIN'] = 'hh-fb-poc.local'
 end
 
 before do
@@ -63,12 +67,12 @@ get "/" do
 
   if session[:access_token]
     @user    = @graph.get_object("me")
-    @friends = @graph.get_connections('me', 'friends')
+    # @friends = @graph.get_connections('me', 'friends')
     @photos  = @graph.get_connections('me', 'photos')
-    @likes   = @graph.get_connections('me', 'likes').first(4)
+    # @likes   = @graph.get_connections('me', 'likes').first(4)
 
     # for other data you can always run fql
-    @friends_using_app = @graph.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
+    # @friends_using_app = @graph.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
   end
   erb :index
 end
@@ -77,6 +81,27 @@ end
 post "/" do
   redirect "/"
 end
+
+get "/old" do
+  # Get base API Connection
+  @graph  = Koala::Facebook::API.new(session[:access_token])
+
+  # Get public details of current application
+  @app  =  @graph.get_object(ENV["FACEBOOK_APP_ID"])
+
+  if session[:access_token]
+    @user    = @graph.get_object("me")
+    @friends = @graph.get_connections('me', 'friends')
+    @photos  = @graph.get_connections('me', 'photos')
+    @likes   = @graph.get_connections('me', 'likes').first(4)
+
+    # for other data you can always run fql
+    @friends_using_app = @graph.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
+  end
+  erb :index_old
+end
+
+
 
 # used to close the browser window opened to post to wall/send to friends
 get "/close" do
