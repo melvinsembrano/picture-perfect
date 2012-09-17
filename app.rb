@@ -17,8 +17,8 @@ FACEBOOK_SCOPE = 'user_likes,user_photos,user_photo_video_tags'
 
 unless ENV["FACEBOOK_APP_ID"] && ENV["FACEBOOK_SECRET"]
   # abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
-  ENV["FACEBOOK_APP_ID"] = '461240437254731'
-  ENV["FACEBOOK_SECRET"] = '59135c58ac75ef52d97ecd9b9e822976'
+  ENV["FACEBOOK_APP_ID"] = '466607510050762'
+  ENV["FACEBOOK_SECRET"] = '04d3307e0f0453c1760e1584b41ad792'
   ENV['TEST_DOMAIN'] = 'hh-fb-poc.local'
 end
 
