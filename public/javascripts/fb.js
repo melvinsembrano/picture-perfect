@@ -103,7 +103,10 @@ var myFaces = {
       $("#auth-loggedout").show();
       $("#auth-loggedin").hide();
 
-      me.process('/me/photos?limit=30');
+      me.process('/me/photos?limit=10');
+
+      // me.processQuery();
+
     } else {
       $("#auth-loggedout").hide();
       $("#auth-loggedin").show();
@@ -121,6 +124,34 @@ var myFaces = {
     });
   },
 
+  processQuery: function() {
+    var me = this;
+
+    FB.api({
+      method: 'fql.query',
+      //query: "SELECT pid, src_big, src_small, src, link, caption, images FROM photo WHERE pid in (SELECT pid FROM photo_tag WHERE subject IN  (SELECT uid FROM family WHERE profile_id = me())) LIMIT 30"
+      query: "SELECT pid, src_big, src_small, src, link, caption, images FROM photo WHERE pid in (SELECT pid FROM photo_tag WHERE subject IN  (SELECT uid2 FROM friend WHERE uid1 = me())) LIMIT 30"
+    }, function(resp) {
+      me.resp = resp;
+      me.processData(resp);
+ 
+    });
+
+/**
+    FB.api({
+      method: 'fql.multiquery',
+      queries: {
+        'q1': 'SELECT uid FROM family WHERE profile_id = me()',
+        'q2': 'SELECT pid FROM photo_tag WHERE subject IN (SELECT uid FROM #q1)',
+        'q3': 'SELECT pid, src_big, src_small, src, link, caption, images FROM photo WHERE pid in (SELECT pid FROM #q2)'
+      }
+    }, function(resp) {
+      console.info(resp);
+    });
+**/
+
+  },
+
   processData: function(data) {
     var me = this, el;
     el = $('#images_panel');
@@ -133,7 +164,7 @@ var myFaces = {
       el.html('');
 
       $.each(data, function(i) {
-        console.info(this);
+        //console.info(this);
         new myFaces.PictureBox(this.images[me.randomize(4)+4].source, i, el);
       });
 
@@ -164,7 +195,7 @@ var myFaces = {
     $("#auth-loginlink").click(function() {
       FB.login(function() {
         // callback function
-      },{scope: 'user_about_me,user_photos'});
+      },{scope: 'user_about_me,user_photos,friends_photos,user_relationships'});
     });
 
     $("#auth-logoutlink").click(function() {
