@@ -43,6 +43,41 @@ var fbMe = {
 
 var myFaces = {
 
+  Parallax: function(obj, index, pe) {
+    var me = this, img, image;
+    me.el = $('<div></div>');
+    image = obj.images[0];
+    console.info(obj);
+
+    img = $('<img />').attr('src', obj.source)
+    me.el
+      .width('100%')
+      .height(obj.height)
+//      .css('backgroundImage', 'url(' + obj.source + ')')
+      .addClass('picture')
+      .append(
+        img
+      );
+
+    pe.append(me.el);
+
+    $(me.el).waypoint(function (ev, dir) {
+      // console.info($(ev.target).position());
+      if(myFaces.currentImg) {
+        myFaces.currentImg.removeClass('show-in');
+        myFaces.currentImg.addClass('show-out');
+      }
+
+      img.removeClass('show-out');
+      img.addClass('show-in');
+      myFaces.currentImg = img;
+    }, {
+      offset: '30%'
+    });
+
+    return me.el;
+  },
+
   PictureBox: function(url, index, pr) {
     var me = this;
     me.el = $('<div></div>');
@@ -103,7 +138,7 @@ var myFaces = {
       $("#auth-loggedout").show();
       $("#auth-loggedin").hide();
 
-      me.process('/me/photos?limit=10');
+      me.process('/me/photos?limit=30');
 
       // me.processQuery();
 
@@ -155,25 +190,20 @@ var myFaces = {
   processData: function(data) {
     var me = this, el;
     el = $('#images_panel');
-    el.find('.picture').each(function() {
-      $(this).removeClass($(this).data().animation);
-      $(this).addClass(me.randomOutAnimation());
+
+    //el.html('');
+
+    $.each(data, function(i) {
+      // new myFaces.PictureBox(this.images[me.randomize(4)+4].source, i, el);
+      new myFaces.Parallax(this, i, el);
     });
-
-    setTimeout(function() {
-      el.html('');
-
-      $.each(data, function(i) {
-        //console.info(this);
-        new myFaces.PictureBox(this.images[me.randomize(4)+4].source, i, el);
-      });
-
-    }, 2000);
+    me.next();
 
   },
 
   next: function() {
-    if (this.resp) {
+    if (this.resp && this.resp.paging && this.resp.paging.next) {
+      console.info('getting next page..');
       this.process(this.resp.paging.next);
     }
   },

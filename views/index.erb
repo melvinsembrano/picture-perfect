@@ -27,6 +27,7 @@
     <meta property="fb:app_id" content="<%= @app['name'] %>" />
 
     <script type="text/javascript" src="/javascripts/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="/javascripts/waypoints.js"></script>
     <script type="text/javascript" src="/javascripts/fb.js"></script>
 
     <!--[if IE]>
@@ -38,7 +39,7 @@
     <![endif]-->
   </head>
   <body>
-     <div id="auth-status">
+     <div id="auth-status" style='height: 400px;'>
        <div id="auth-loggedin">
          <a class="fb_button fb_button_medium" href="#" id="auth-loginlink">
            <span class="fb_button_text">Log In</span>
@@ -58,6 +59,6 @@
     </script>
 
     <div id='images_panel'></div>
-
+    <div style='height: 300px;'></div>
   </body>
 </html>

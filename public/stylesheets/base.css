@@ -359,8 +359,52 @@ header .tagline {
 }
 
 .picture {
-  margin: 4px;
+  margin: 4px auto;
+  background-repeat: no-repeat;
+  position: relative;
 }
+
 .picture img {
   border: 4px solid #000;
+  position: absolute;
+  left: 95%;
+  height: 10%;
+  top: 45%;
+}
+
+.picture img.show-in {
+  height: 100%;
+  left: 20%;
+  top: 0%;
+  -webkit-transition-property: height, left, top;
+  -webkit-transition-duration: 1s, 1s;
+  -webkit-transition-delay: 0s, 0s, 0s;
+
+  -moz-transition-property: height, left, top;
+  -moz-transition-duration: 1s, 1s, 1s;
+  -moz-transition-delay: 0s;
+  -moz-transform: rotate(360deg);
+
+  transition-property: height, left, top;
+  transition-duration: 1s, 1s;
+  transition-delay: 0s, 0s, 0s;
+
+}
+
+.picture img.show-out {
+  height: 10%;
+  left: 0%;
+  top: 40%;
+  -webkit-transition-property: height, left, top;
+  -webkit-transition-duration: 1s, 1s;
+  -webkit-transition-delay: 0s, 0s, 0s;
+
+  -moz-transition-property: height, left, top;
+  -moz-transition-duration: 1s, 1s, 1s;
+  -moz-transition-delay: 0.3s;
+
+  transition-property: height, left, top;
+  transition-duration: 1s, 1s;
+  transition-delay: 0s, 0s, 0s;
+
 }
